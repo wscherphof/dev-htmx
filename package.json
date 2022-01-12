@@ -1,0 +1,25 @@
+{
+  "name": "dev-htmx",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wscherphof/dev-htmx.git"
+  },
+  "author": "Wouter Scherphof",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/wscherphof/dev-htmx/issues"
+  },
+  "homepage": "https://github.com/wscherphof/dev-htmx#readme",
+  "devDependencies": {
+    "standard": "^16.0.4"
+  },
+  "dependencies": {
+    "htmx.org": "^1.6.1"
+  }
+}
