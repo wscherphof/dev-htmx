@@ -19,3 +19,7 @@ htmx.on('htmx:configRequest', function ({ detail }) { // eslint-disable-line
     detail.path = `${API_PROTOCOL}://${API_ADDRESS}:${API_PORT}${detail.path}`
   }
 })
+
+htmx.on('htmx:beforeSend', function ({ detail }) { // eslint-disable-line
+  detail.xhr.withCredentials = true
+})
