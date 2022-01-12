@@ -15,7 +15,7 @@ htmx.on('htmx:configRequest', function ({ detail }) { // eslint-disable-line
     detail.path = pathname + search
   }
   if (host === `${DEV_ADDRESS}:${DEV_PORT}` && detail.path.startsWith('/')) {
-    // vite dev server proxy to fastify
+    // don't ask the dev server; ask the api server
     detail.path = `${API_PROTOCOL}://${API_ADDRESS}:${API_PORT}${detail.path}`
   }
 })
