@@ -3,7 +3,7 @@ import 'https://unpkg.com/hyperscript.org@0.9.3' // not yet on npm
 
 let INITED
 
-function init(options = {}) {
+function init (options = {}) {
   if (INITED) {
     return
   } else {
@@ -53,7 +53,8 @@ function init(options = {}) {
   })
 
   const app = document.querySelector(`#${appId}`)
-  app.dispatchEvent(new Event('init'))
+  const init = new Event('init') // eslint-disable-line
+  app.dispatchEvent(init)
 }
 
 export default { init }
