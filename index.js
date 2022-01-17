@@ -35,7 +35,3 @@ htmx.on('htmx:afterSwap', function ({ detail }) { // eslint-disable-line
     htmx.ajax('GET', push, PUSH_SELECTOR) // eslint-disable-line
   }
 })
-
-htmx.on('htmx:beforeSend', function ({ detail }) { // eslint-disable-line
-  detail.xhr.withCredentials = true
-})
