@@ -1,4 +1,4 @@
-import 'htmx.org' // htmx from or { htmx } from don't work
+import htmx from './htmx'
 import 'https://unpkg.com/hyperscript.org@0.9.3' // not yet on npm
 
 let INITED
@@ -33,7 +33,7 @@ function init (options = {}) {
   api.origin = api.origin || `${api.protocol}://${api.address}:${api.port}`
 
   // if served from dev, force ajax urls to the api server
-  htmx.on('htmx:configRequest', function ({ detail }) { // eslint-disable-line
+  htmx.on('htmx:configRequest', function ({ detail }) {
     const { origin, pathname, search } = window.location
     const development = origin === dev.origin
     const url = new URL(detail.path, development ? api.origin : origin)
@@ -44,17 +44,15 @@ function init (options = {}) {
   })
 
   // after loading the app, fetch any pushed url's content
-  htmx.on('htmx:afterSwap', function ({ detail }) { // eslint-disable-line
+  htmx.on('htmx:afterSwap', function ({ detail }) {
     const { pathname, search } = window.location
     if (detail.target.id === appId && pathname !== homePath) {
       const push = `${pathname}${search}`
-      htmx.ajax('GET', push, pushSelector) // eslint-disable-line
+      htmx.ajax('GET', push, pushSelector)
     }
   })
 
-  const app = document.querySelector(`#${appId}`)
-  const init = new Event('init') // eslint-disable-line
-  app.dispatchEvent(init)
+  htmx.trigger(htmx.find(`#${appId}`), 'init')
 }
 
 export default { init }
