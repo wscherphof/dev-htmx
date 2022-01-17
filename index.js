@@ -18,9 +18,12 @@ let API_ORIGIN = `${API_PROTOCOL}://${API_ADDRESS}:${API_PORT}` // eslint-disabl
 
 // if served from dev, force ajax urls to the api server
 htmx.on('htmx:configRequest', function ({ detail }) { // eslint-disable-line
-  const { origin } = window.location
+  const { origin, pathname, search } = window.location
   const DEVELOPMENT = origin === DEV_ORIGIN
   const url = new URL(detail.path, DEVELOPMENT ? API_ORIGIN : origin)
+  if (detail.target.id === APP_ID && pathname === HOME_PATH) {
+    url.search = search
+  }
   detail.path = url.toString()
 })
 
