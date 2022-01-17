@@ -1,37 +1,59 @@
 import 'htmx.org' // htmx from or { htmx } from don't work
 import 'https://unpkg.com/hyperscript.org@0.9.3' // not yet on npm
 
-// FIXME: make a proper module with an options object
-let HOME_PATH = '/' // eslint-disable-line
-let APP_ID = 'app' // eslint-disable-line
-let PUSH_SELECTOR = 'main' // eslint-disable-line
+let INITED
 
-let DEV_PROTOCOL = 'http' // eslint-disable-line
-let DEV_ADDRESS = 'localhost' // eslint-disable-line
-let DEV_PORT = 3001 // eslint-disable-line
-let DEV_ORIGIN = `${DEV_PROTOCOL}://${DEV_ADDRESS}:${DEV_PORT}` // eslint-disable-line
-
-let API_PROTOCOL = 'http' // eslint-disable-line
-let API_ADDRESS = 'localhost' // eslint-disable-line
-let API_PORT = 3000 // eslint-disable-line
-let API_ORIGIN = `${API_PROTOCOL}://${API_ADDRESS}:${API_PORT}` // eslint-disable-line
-
-// if served from dev, force ajax urls to the api server
-htmx.on('htmx:configRequest', function ({ detail }) { // eslint-disable-line
-  const { origin, pathname, search } = window.location
-  const DEVELOPMENT = origin === DEV_ORIGIN
-  const url = new URL(detail.path, DEVELOPMENT ? API_ORIGIN : origin)
-  if (detail.target.id === APP_ID && pathname === HOME_PATH) {
-    url.search = search
+function init(options = {}) {
+  if (INITED) {
+    return
+  } else {
+    INITED = true
   }
-  detail.path = url.toString()
-})
-
-// after loading the app, fetch any pushed url's content
-htmx.on('htmx:afterSwap', function ({ detail }) { // eslint-disable-line
-  const { pathname, search } = window.location
-  if (detail.target.id === APP_ID && pathname !== HOME_PATH) {
-    const push = `${pathname}${search}`
-    htmx.ajax('GET', push, PUSH_SELECTOR) // eslint-disable-line
+  const defaults = {
+    homePath: '/',
+    appId: 'app',
+    pushSelector: 'main',
+    dev: {
+      protocol: 'http',
+      address: 'localhost',
+      port: '3001'
+    },
+    api: {
+      protocol: 'http',
+      address: 'localhost',
+      port: '3000'
+    }
   }
-})
+  options.dev = Object.assign(defaults.dev, options.dev)
+  options.api = Object.assign(defaults.api, options.api)
+  options = Object.assign(defaults, options)
+  const { homePath, appId, pushSelector, dev, api } = options
+  // pass either protocol and/or address and/or port, or the complete origin
+  dev.origin = dev.origin || `${dev.protocol}://${dev.address}:${dev.port}`
+  api.origin = api.origin || `${api.protocol}://${api.address}:${api.port}`
+
+  // if served from dev, force ajax urls to the api server
+  htmx.on('htmx:configRequest', function ({ detail }) { // eslint-disable-line
+    const { origin, pathname, search } = window.location
+    const development = origin === dev.origin
+    const url = new URL(detail.path, development ? api.origin : origin)
+    if (detail.target.id === appId && pathname === homePath) {
+      url.search = search
+    }
+    detail.path = url.toString()
+  })
+
+  // after loading the app, fetch any pushed url's content
+  htmx.on('htmx:afterSwap', function ({ detail }) { // eslint-disable-line
+    const { pathname, search } = window.location
+    if (detail.target.id === appId && pathname !== homePath) {
+      const push = `${pathname}${search}`
+      htmx.ajax('GET', push, pushSelector) // eslint-disable-line
+    }
+  })
+
+  const app = document.querySelector(`#${appId}`)
+  app.dispatchEvent(new Event('init'))
+}
+
+export default { init }
