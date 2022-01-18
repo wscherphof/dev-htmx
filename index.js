@@ -34,18 +34,13 @@ function init(options = {}) {
   const DEVELOPMENT = window.location.origin === dev.origin
 
   htmx.on('htmx:configRequest', function ({ detail }) {
-    const { origin, pathname, search } = window.location
     // if served from dev, force ajax urls to the api server
-    const url = new URL(detail.path, DEVELOPMENT ? api.origin : origin)
-    if (detail.target.id === appId && pathname === homePath) {
-      // append the search params from the address bar
-      url.search = search
-    }
+    const url = new URL(detail.path, DEVELOPMENT ? api.origin : window.location.origin)
     detail.path = url.toString()
   })
 
   if (DEVELOPMENT) {
-    // fetch the HTML
+    // fetch the inial app HTML
     const { pathname, search } = window.location
     htmx.ajax('GET', pathname + search, {
       source: htmx.find(`#${appId}`),
