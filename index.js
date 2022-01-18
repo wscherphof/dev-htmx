@@ -3,7 +3,7 @@ import 'https://unpkg.com/hyperscript.org@0.9.3' // not yet on npm
 
 let INITED
 
-function init (options = {}) {
+function init(options = {}) {
   if (INITED) {
     return
   } else {
@@ -12,7 +12,6 @@ function init (options = {}) {
   const defaults = {
     homePath: '/',
     appId: 'app',
-    pushSelector: 'main',
     dev: {
       protocol: 'http',
       address: 'localhost',
@@ -27,32 +26,32 @@ function init (options = {}) {
   options.dev = Object.assign(defaults.dev, options.dev)
   options.api = Object.assign(defaults.api, options.api)
   options = Object.assign(defaults, options)
-  const { homePath, appId, pushSelector, dev, api } = options
+  const { homePath, appId, dev, api } = options
   // pass either protocol and/or address and/or port, or the complete origin
   dev.origin = dev.origin || `${dev.protocol}://${dev.address}:${dev.port}`
   api.origin = api.origin || `${api.protocol}://${api.address}:${api.port}`
 
-  // if served from dev, force ajax urls to the api server
+  const DEVELOPMENT = window.location.origin === dev.origin
+
   htmx.on('htmx:configRequest', function ({ detail }) {
     const { origin, pathname, search } = window.location
-    const development = origin === dev.origin
-    const url = new URL(detail.path, development ? api.origin : origin)
+    // if served from dev, force ajax urls to the api server
+    const url = new URL(detail.path, DEVELOPMENT ? api.origin : origin)
     if (detail.target.id === appId && pathname === homePath) {
+      // append the search params from the address bar
       url.search = search
     }
     detail.path = url.toString()
   })
 
-  // after loading the app, fetch any pushed url's content
-  htmx.on('htmx:afterSwap', function ({ detail }) {
+  if (DEVELOPMENT) {
+    // fetch the HTML
     const { pathname, search } = window.location
-    if (detail.target.id === appId && pathname !== homePath) {
-      const push = `${pathname}${search}`
-      htmx.ajax('GET', push, pushSelector)
-    }
-  })
-
-  htmx.trigger(htmx.find(`#${appId}`), 'init')
+    htmx.ajax('GET', pathname + search, {
+      source: htmx.find(`#${appId}`),
+      headers: { 'HX-Init': true }
+    })
+  }
 }
 
 export default { init }
