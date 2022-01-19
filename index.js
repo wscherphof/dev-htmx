@@ -34,7 +34,7 @@ function init(options = {}) {
   const DEVELOPMENT = window.location.origin === dev.origin
 
   htmx.on('htmx:configRequest', function ({ detail }) {
-    // if served from dev, force ajax urls to the api server
+    // if served from dev, force htmx requests to the api server
     const url = new URL(detail.path, DEVELOPMENT ? api.origin : window.location.origin)
     detail.path = url.toString()
   })
