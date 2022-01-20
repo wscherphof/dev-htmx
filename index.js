@@ -31,6 +31,7 @@ function init(options = {}) {
   api.origin = api.origin || `${api.protocol}://${api.address}:${api.port}`;
 
   const DEVELOPMENT = window.location.origin === dev.origin;
+  const APP = htmx.find(`#${appId}`);
 
   htmx.on("htmx:configRequest", function ({ detail }) {
     // if served from dev, force htmx requests to the api server
@@ -39,14 +40,18 @@ function init(options = {}) {
       DEVELOPMENT ? api.origin : window.location.origin
     );
     detail.path = url.toString();
+    // when targeting the app itself, tell the server we want the complete app
+    // HTML, even though we're an HTMX-request
+    if (detail.target === APP) {
+      detail.headers["HX-Init"] = true;
+    }
   });
 
   if (DEVELOPMENT) {
     // fetch the inial app HTML
     const { pathname, search } = window.location;
     htmx.ajax("GET", pathname + search, {
-      source: htmx.find(`#${appId}`),
-      headers: { "HX-Init": true },
+      source: APP,
     });
   }
 }
