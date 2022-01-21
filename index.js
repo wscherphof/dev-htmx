@@ -1,5 +1,5 @@
-import htmx from "./htmx";
-import "https://unpkg.com/hyperscript.org@0.9.4"; // not yet on npm
+import htmx from './htmx';
+import 'https://unpkg.com/hyperscript.org@0.9.4'; // not yet on npm
 
 let INITED;
 
@@ -10,16 +10,16 @@ function init(options = {}) {
     INITED = true;
   }
   const defaults = {
-    appId: "app",
+    appId: 'app',
     dev: {
-      protocol: "http",
-      address: "localhost",
-      port: "3001",
+      protocol: 'http',
+      address: 'localhost',
+      port: '3001',
     },
     api: {
-      protocol: "http",
-      address: "localhost",
-      port: "3000",
+      protocol: 'http',
+      address: 'localhost',
+      port: '3000',
     },
   };
   options.dev = Object.assign(defaults.dev, options.dev);
@@ -33,7 +33,7 @@ function init(options = {}) {
   const DEVELOPMENT = window.location.origin === dev.origin;
   const APP = htmx.find(`#${appId}`);
 
-  htmx.on("htmx:configRequest", function ({ detail }) {
+  htmx.on('htmx:configRequest', function ({ detail }) {
     // if served from dev, force htmx requests to the api server
     const url = new URL(
       detail.path,
@@ -43,14 +43,14 @@ function init(options = {}) {
     // when targeting the app itself, tell the server we want the complete app
     // HTML, even though we're an HTMX-request
     if (detail.target === APP) {
-      detail.headers["HX-Init"] = true;
+      detail.headers['HX-Init'] = true;
     }
   });
 
   if (DEVELOPMENT) {
     // fetch the inial app HTML
     const { pathname, search } = window.location;
-    htmx.ajax("GET", pathname + search, {
+    htmx.ajax('GET', pathname + search, {
       source: APP,
     });
   }
