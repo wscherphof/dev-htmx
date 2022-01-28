@@ -9,7 +9,7 @@ Enables [HTMX](https://htmx.org) hypermedia applications from a frontend
 npm install dev-htmx
 ```
 
-## import
+## Import
 
 Then, in your `main.js`:
 
@@ -26,7 +26,7 @@ Optional options object parameter to `init`:
   HTML. Default: `{ protocol: 'http', address: 'localhost', port: '3000' }`.
 - `dev`: An object addressing the "development server" that your bundler can run
   to serve your unbundled assets. Default: `{ protocol: 'http', address: 'localhost', port: '3001' }`.
-- For `api` and `dev`, you can pass any number of its properties to ovveride the
+- For `api` and `dev`, you can pass any number of its properties to override the
   default, e.g. `{ port: 5000 }`.
 
 ## Features
